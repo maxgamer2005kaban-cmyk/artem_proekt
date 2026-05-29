@@ -1,0 +1,1 @@
+"""App configuration for the training app."""

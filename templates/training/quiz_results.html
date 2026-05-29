@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Results | {{ quiz.title }}{% endblock %}
+
+{% block content %}
+  <h2 class="mb-3">Quiz Results: {{ quiz.title }}</h2>
+  <div class="alert alert-info" role="alert">
+    You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong>.
+  </div>
+  <ul class="list-group mb-4">
+    {% for result in detailed_results %}
+      <li class="list-group-item">
+        <h6>{{ result.question.text }}</h6>
+        {% if result.is_correct %}
+          <p class="text-success">Correct! You answered: {{ result.selected.text }}</p>
+        {% else %}
+          {% if result.selected %}
+            <p class="text-danger">Incorrect. You answered: {{ result.selected.text }}</p>
+          {% else %}
+            <p class="text-danger">You did not select an answer.</p>
+          {% endif %}
+          <p class="text-muted">Correct answer: {{ result.correct.text }}</p>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="{%
+    url 'training:technique_detail' quiz.technique.pk
+  %}" class="btn btn-secondary">Back to Technique</a>
+{% endblock %}

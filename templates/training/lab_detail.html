@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ lab.title }} | Lab{% endblock %}
+
+{% block content %}
+  <h2 class="mb-3">Lab: {{ lab.title }}</h2>
+  <p class="text-muted">Technique: {{ lab.technique.title }}</p>
+  <p>{{ lab.description }}</p>
+  <hr />
+  <h3>Instructions</h3>
+  <pre class="bg-light p-3 rounded">{{ lab.instructions }}</pre>
+  <a href="{%
+    url 'training:technique_detail' lab.technique.pk
+  %}" class="btn btn-secondary mt-3">Back to Technique</a>
+{% endblock %}

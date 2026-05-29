@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Techniques | MITRE ATT&CK Training{% endblock %}
+
+{% block content %}
+  <div class="text-center my-5">
+    <h1 class="display-4 fw-bold">MITRE ATT&amp;CK Training Platform</h1>
+    <p class="lead">Explore adversary tactics and techniques, test your knowledge, and practice with hands-on labs.</p>
+  </div>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for technique in techniques %}
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ technique.title }}</h5>
+            <p class="card-text small flex-grow-1">
+              {{ technique.description|truncatewords:30 }}
+            </p>
+            <a href="{% url 'training:technique_detail' technique.pk %}" class="btn btn-primary mt-auto">Learn More</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No techniques available.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
