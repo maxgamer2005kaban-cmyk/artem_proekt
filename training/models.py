@@ -15,12 +15,12 @@ class Technique(models.Model):
 
     title = models.CharField(max_length=200)
     description = models.TextField()
-    attck_id = models.CharField(max_length=20, blank=True, help_text='Identifier from the MITRE ATT&CK catalog')
+    attck_id = models.CharField(max_length=20, blank=True, help_text='Идентификатор техники из MITRE ATT&CK')
 
     class Meta:
         ordering = ['title']
-        verbose_name = 'Technique'
-        verbose_name_plural = 'Techniques'
+        verbose_name = 'техника'
+        verbose_name_plural = 'техники'
 
     def __str__(self) -> str:
         return self.title
@@ -34,8 +34,8 @@ class Quiz(models.Model):
 
     class Meta:
         ordering = ['title']
-        verbose_name = 'Quiz'
-        verbose_name_plural = 'Quizzes'
+        verbose_name = 'тест'
+        verbose_name_plural = 'тесты'
 
     def __str__(self) -> str:
         return f"{self.technique.title}: {self.title}"
@@ -49,8 +49,8 @@ class Question(models.Model):
 
     class Meta:
         ordering = ['id']
-        verbose_name = 'Question'
-        verbose_name_plural = 'Questions'
+        verbose_name = 'вопрос'
+        verbose_name_plural = 'вопросы'
 
     def __str__(self) -> str:
         return self.text
@@ -65,8 +65,8 @@ class Choice(models.Model):
 
     class Meta:
         ordering = ['id']
-        verbose_name = 'Choice'
-        verbose_name_plural = 'Choices'
+        verbose_name = 'вариант ответа'
+        verbose_name_plural = 'варианты ответов'
 
     def __str__(self) -> str:
         return self.text
@@ -78,12 +78,12 @@ class Lab(models.Model):
     technique = models.ForeignKey(Technique, on_delete=models.CASCADE, related_name='labs')
     title = models.CharField(max_length=200)
     description = models.TextField()
-    instructions = models.TextField(help_text='Step-by-step instructions for the lab')
+    instructions = models.TextField(help_text='Пошаговая инструкция для лабораторной работы')
 
     class Meta:
         ordering = ['title']
-        verbose_name = 'Lab'
-        verbose_name_plural = 'Labs'
+        verbose_name = 'лабораторная работа'
+        verbose_name_plural = 'лабораторные работы'
 
     def __str__(self) -> str:
         return f"{self.technique.title}: {self.title}"

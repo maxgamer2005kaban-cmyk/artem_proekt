@@ -1,28 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
-    {# Load the static template tag library so that the static() helper works. #}
     {% load static %}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}MITRE ATT&CK Training Platform{% endblock %}</title>
-    <!-- Bootstrap CSS -->
+    <title>{% block title %}MITRE ATT&CK Практикум{% endblock %}</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-VkIImaPfX6tWcUJ0Q8JGNb5Dg8sl3fXNLBaAofKdcmXz7RpdKFu75/Xp73gBRt2m"
-      crossorigin="anonymous"
     />
-    <!-- Custom styles -->
-    {# Use the static template tag to reference the CSS file. #}
-    <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/style.css' %}?v=5" rel="stylesheet" />
     {% block extra_head %}{% endblock %}
   </head>
   <body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'training:technique_list' %}">ATT&CK Platform</a>
+    <nav class="navbar navbar-expand-lg navbar-dark site-navbar">
+      <div class="container">
+        <a class="navbar-brand brand-lockup" href="{% url 'training:technique_list' %}">
+          <span class="brand-mark">A</span>
+          <span>
+            <strong>MITRE Практикум</strong>
+            <small>теория · тесты · лабы</small>
+          </span>
+        </a>
         <button
           class="navbar-toggler"
           type="button"
@@ -30,31 +29,63 @@
           data-bs-target="#navbarNav"
           aria-controls="navbarNav"
           aria-expanded="false"
-          aria-label="Toggle navigation"
+          aria-label="Открыть меню"
         >
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+          <ul class="navbar-nav ms-auto align-items-lg-center">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'training:technique_list' %}">Home</a>
+              <a class="nav-link" href="{% url 'training:technique_list' %}#techniques">Техники</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'training:method' %}">Методика</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'training:matrix' %}">Карта</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'training:quiz_catalog' %}">Тесты</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'training:lab_catalog' %}">Лабы</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link admin-link" href="/admin/">Админка</a>
             </li>
           </ul>
         </div>
       </div>
     </nav>
-    <!-- Main content area -->
-    <main class="py-4">
+
+    <main class="site-main">
       <div class="container">
         {% block content %}{% endblock %}
       </div>
     </main>
-    <!-- Bootstrap JS -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-fw5FzKL/TZIIXW4VtZReLsya/MnTKlW0jtOGzI+9wBbnC+xRzsaxw+gEeUvoEWc2"
-      crossorigin="anonymous"
-    ></script>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="footer-brand" href="{% url 'training:technique_list' %}">MITRE Практикум</a>
+          <p>
+            Учебная платформа для знакомства с техниками MITRE ATT&amp;CK:
+            теория, проверка знаний и безопасные лабораторные сценарии.
+          </p>
+        </div>
+        <div>
+          <h2>Разделы</h2>
+          <a href="{% url 'training:technique_list' %}#techniques">Каталог техник</a>
+          <a href="{% url 'training:method' %}">Методика обучения</a>
+          <a href="{% url 'training:matrix' %}">Мини-карта ATT&amp;CK</a>
+          <a href="{% url 'training:quiz_catalog' %}">Все тесты</a>
+          <a href="{% url 'training:lab_catalog' %}">Все лабораторные</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/site.js' %}?v=1"></script>
     {% block extra_scripts %}{% endblock %}
   </body>
 </html>

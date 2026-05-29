@@ -25,7 +25,8 @@ class QuizForm(forms.Form):
             field_name = f'question_{question.id}'
             self.fields[field_name] = forms.ModelChoiceField(
                 queryset=question.choices.all(),
-                widget=forms.RadioSelect,
+                widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
                 label=question.text,
                 empty_label=None,
+                error_messages={'required': 'Выберите один вариант ответа.'},
             )

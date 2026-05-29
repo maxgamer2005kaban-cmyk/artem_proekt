@@ -1,15 +1,40 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ lab.title }} | Lab{% endblock %}
+{% block title %}{{ lab.title }} | Лабораторная{% endblock %}
 
 {% block content %}
-  <h2 class="mb-3">Lab: {{ lab.title }}</h2>
-  <p class="text-muted">Technique: {{ lab.technique.title }}</p>
-  <p>{{ lab.description }}</p>
-  <hr />
-  <h3>Instructions</h3>
-  <pre class="bg-light p-3 rounded">{{ lab.instructions }}</pre>
-  <a href="{%
-    url 'training:technique_detail' lab.technique.pk
-  %}" class="btn btn-secondary mt-3">Back to Technique</a>
+  <section class="page-hero compact" data-reveal>
+    <a class="back-link" href="{% url 'training:technique_detail' lab.technique.pk %}">← К технике</a>
+    <span class="eyebrow">лабораторная работа</span>
+    <h1>{{ lab.title }}</h1>
+    <p>{{ lab.description }}</p>
+    <span class="technique-id">{{ lab.technique.title }}</span>
+  </section>
+
+  <section class="lab-layout" data-reveal>
+    <div class="content-panel lab-panel">
+      <span class="eyebrow">инструкция</span>
+      <h2>Порядок выполнения</h2>
+      <div class="lab-instructions">
+        {{ lab.instructions|linebreaks }}
+      </div>
+    </div>
+
+    <aside class="lab-checklist">
+      <span class="eyebrow">чеклист аналитика</span>
+      <label><input type="checkbox" /> Признаки техники найдены</label>
+      <label><input type="checkbox" /> Артефакты выписаны</label>
+      <label><input type="checkbox" /> Гипотеза сформулирована</label>
+      <label><input type="checkbox" /> Действие реагирования выбрано</label>
+      <div class="tip-box">
+        <strong>Формат вывода</strong>
+        <p>
+          В конце лабораторной напишите 3-4 предложения: что заметили,
+          почему это похоже на технику MITRE ATT&amp;CK и что стоит проверить дальше.
+        </p>
+      </div>
+    </aside>
+  </section>
+
+  <a href="{% url 'training:technique_detail' lab.technique.pk %}" class="btn btn-secondary mt-4">Вернуться к технике</a>
 {% endblock %}

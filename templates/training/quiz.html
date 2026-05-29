@@ -1,24 +1,51 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ quiz.title }} | Quiz{% endblock %}
+{% block title %}{{ quiz.title }} | Тест{% endblock %}
 
 {% block content %}
-  <h2 class="mb-4">{{ quiz.title }}</h2>
-  <form method="post" novalidate>
-    {% csrf_token %}
-    {% for field in form %}
-      <div class="mb-4 p-3 border rounded shadow-sm">
-        <legend class="h5">{{ field.label }}</legend>
-        {% for radio in field %}
-          <div class="form-check">
-            {{ radio.tag }}
-            <label class="form-check-label" for="{{ radio.id_for_label }}">
-              {{ radio.choice_label }}
-            </label>
-          </div>
-        {% endfor %}
+  <section class="page-hero compact" data-reveal>
+    <a class="back-link" href="{% url 'training:technique_detail' quiz.technique.pk %}">← К технике</a>
+    <span class="eyebrow">тест</span>
+    <h1>{{ quiz.title }}</h1>
+    <p>Выберите один правильный ответ в каждом вопросе. Результат появится сразу после отправки.</p>
+  </section>
+
+  <section class="quiz-layout" data-reveal>
+    <aside class="quiz-sidebar">
+      <span class="eyebrow">прогресс</span>
+      <strong><span data-progress-text>0</span> / {{ question_count }}</strong>
+      <div class="progress-track" aria-hidden="true">
+        <span data-quiz-progress></span>
       </div>
-    {% endfor %}
-    <button type="submit" class="btn btn-primary">Submit Answers</button>
-  </form>
+      <p>Ответьте на все вопросы, чтобы отправить тест и увидеть разбор.</p>
+      <div class="tip-box">
+        <strong>Совет</strong>
+        <p>
+          Не угадывайте ответ по знакомым словам. Представьте, что вы аналитик:
+          какой вариант безопаснее, лучше подтверждается фактами и помогает расследованию?
+        </p>
+      </div>
+    </aside>
+
+    <form method="post" novalidate class="quiz-form">
+      {% csrf_token %}
+      {% for field in form %}
+        <fieldset class="question-card" data-question>
+          <legend>{{ forloop.counter }}. {{ field.label }}</legend>
+          {% for radio in field %}
+            <div class="form-check option-tile">
+              {{ radio.tag }}
+              <label class="form-check-label" for="{{ radio.id_for_label }}">
+                {{ radio.choice_label }}
+              </label>
+            </div>
+          {% endfor %}
+          {% for error in field.errors %}
+            <p class="field-error">{{ error }}</p>
+          {% endfor %}
+        </fieldset>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary btn-lg">Проверить ответы</button>
+    </form>
+  </section>
 {% endblock %}

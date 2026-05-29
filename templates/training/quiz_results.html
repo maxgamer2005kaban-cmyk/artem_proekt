@@ -1,30 +1,46 @@
 {% extends 'base.html' %}
 
-{% block title %}Results | {{ quiz.title }}{% endblock %}
+{% block title %}Результат | {{ quiz.title }}{% endblock %}
 
 {% block content %}
-  <h2 class="mb-3">Quiz Results: {{ quiz.title }}</h2>
-  <div class="alert alert-info" role="alert">
-    You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong>.
-  </div>
-  <ul class="list-group mb-4">
+  <section class="page-hero compact result-hero" data-reveal>
+    <span class="eyebrow">результат теста</span>
+    <h1>{{ quiz.title }}</h1>
+    <p>Ваш результат: <strong>{{ score }}</strong> из <strong>{{ total }}</strong> правильных ответов.</p>
+    <div class="score-wrap">
+      <div class="score-orb" style="--score: {{ percent }};">
+        <span>{{ percent }}%</span>
+      </div>
+      <p>Чем выше процент, тем увереннее можно переходить к лабораторной работе.</p>
+    </div>
+  </section>
+
+  <div class="results-list" data-reveal-group>
     {% for result in detailed_results %}
-      <li class="list-group-item">
-        <h6>{{ result.question.text }}</h6>
+      <article class="result-item {% if result.is_correct %}is-correct{% else %}is-wrong{% endif %}" data-reveal>
+        <h2>{{ result.question.text }}</h2>
         {% if result.is_correct %}
-          <p class="text-success">Correct! You answered: {{ result.selected.text }}</p>
+          <p class="text-success">Верно. Ваш ответ: {{ result.selected.text }}</p>
         {% else %}
           {% if result.selected %}
-            <p class="text-danger">Incorrect. You answered: {{ result.selected.text }}</p>
+            <p class="text-danger">Неверно. Ваш ответ: {{ result.selected.text }}</p>
           {% else %}
-            <p class="text-danger">You did not select an answer.</p>
+            <p class="text-danger">Ответ не был выбран.</p>
           {% endif %}
-          <p class="text-muted">Correct answer: {{ result.correct.text }}</p>
+          <p class="text-muted">Правильный ответ: {{ result.correct.text }}</p>
         {% endif %}
-      </li>
+      </article>
     {% endfor %}
-  </ul>
-  <a href="{%
-    url 'training:technique_detail' quiz.technique.pk
-  %}" class="btn btn-secondary">Back to Technique</a>
+  </div>
+
+  <section class="story-panel mt-4" data-reveal>
+    <h2>Как использовать результат</h2>
+    <p>
+      Если результат высокий, переходите к лабораторной работе и попробуйте применить знания на учебном сценарии.
+      Если были ошибки, вернитесь к теории техники и перечитайте признаки: обычно неверный ответ показывает,
+      где не хватило контекста или где действие было небезопасным для расследования.
+    </p>
+  </section>
+
+  <a href="{% url 'training:technique_detail' quiz.technique.pk %}" class="btn btn-secondary mt-4">Вернуться к технике</a>
 {% endblock %}

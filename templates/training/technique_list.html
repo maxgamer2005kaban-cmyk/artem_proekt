@@ -1,27 +1,126 @@
 {% extends 'base.html' %}
 
-{% block title %}Techniques | MITRE ATT&CK Training{% endblock %}
+{% block title %}Техники | MITRE ATT&CK Практикум{% endblock %}
 
 {% block content %}
-  <div class="text-center my-5">
-    <h1 class="display-4 fw-bold">MITRE ATT&amp;CK Training Platform</h1>
-    <p class="lead">Explore adversary tactics and techniques, test your knowledge, and practice with hands-on labs.</p>
-  </div>
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    {% for technique in techniques %}
-      <div class="col">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ technique.title }}</h5>
-            <p class="card-text small flex-grow-1">
-              {{ technique.description|truncatewords:30 }}
-            </p>
-            <a href="{% url 'training:technique_detail' technique.pk %}" class="btn btn-primary mt-auto">Learn More</a>
-          </div>
-        </div>
+  <section class="hero-section" data-reveal>
+    <div class="hero-orbit" aria-hidden="true"></div>
+    <div class="hero-content">
+      <span class="eyebrow">обучение по MITRE ATT&amp;CK</span>
+      <h1>Практикум по тактикам и техникам атак</h1>
+      <p>
+        Короткая теория, быстрые тесты и безопасные лабораторные сценарии помогают понять,
+        как выглядят действия атакующего в журналах, письмах, процессах и событиях безопасности.
+        Платформа сделана как учебный тренажёр: без опасных команд, но с понятной логикой расследования.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-lg" href="#techniques">Перейти к техникам</a>
+        <a class="btn btn-ghost btn-lg" href="{% url 'training:method' %}">Как учиться</a>
       </div>
+    </div>
+    <div class="hero-metrics" aria-label="Статистика платформы">
+      <div>
+        <strong data-count>{{ techniques|length }}</strong>
+        <span>техники</span>
+      </div>
+      <div>
+        <strong data-count>{{ quiz_count }}</strong>
+        <span>тестов</span>
+      </div>
+      <div>
+        <strong data-count>{{ lab_count }}</strong>
+        <span>лаб</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="method-strip" data-reveal>
+    <article>
+      <span>01</span>
+      <h2>Разобраться</h2>
+      <p>Прочитать теорию, увидеть контекст техники и понять, какие признаки можно искать в реальной инфраструктуре.</p>
+    </article>
+    <article>
+      <span>02</span>
+      <h2>Проверить</h2>
+      <p>Пройти несколько тестов: от базовых вопросов до ситуационных мини-кейсов по работе аналитика.</p>
+    </article>
+    <article>
+      <span>03</span>
+      <h2>Закрепить</h2>
+      <p>Открыть лабораторную, пройти чеклист, выписать артефакты и сформулировать безопасную реакцию.</p>
+    </article>
+  </section>
+
+  <section class="section-heading" id="techniques" data-reveal>
+    <span class="eyebrow">учебные модули</span>
+    <h2>Выберите технику</h2>
+    <p>
+      Каждая карточка ведёт в отдельный модуль. Внутри модуля теория, признаки, тесты и лабораторные
+      теперь разделены на самостоятельные страницы, чтобы навигация была понятной и красивой.
+    </p>
+  </section>
+
+  <div class="learning-grid" data-reveal-group>
+    {% for technique in techniques %}
+      <article class="technique-card" data-reveal>
+        <div class="card-glow" aria-hidden="true"></div>
+        <div class="card-topline">
+          {% if technique.attck_id %}
+            <span class="technique-id">{{ technique.attck_id }}</span>
+          {% endif %}
+          <span>тестов: {{ technique.quizzes.count }}</span>
+          <span>лаб: {{ technique.labs.count }}</span>
+        </div>
+        <h3>{{ technique.title }}</h3>
+        <p>{{ technique.description|truncatewords:38 }}</p>
+        <a href="{% url 'training:technique_detail' technique.pk %}" class="btn btn-primary mt-auto">Открыть модуль</a>
+      </article>
     {% empty %}
-      <p>No techniques available.</p>
+      <div class="empty-state" data-reveal>
+        <h2 class="h4 mb-2">Техники пока не добавлены</h2>
+        <p class="text-muted mb-0">
+          Добавьте техники MITRE ATT&amp;CK через админ-панель Django или примените миграции с демо-данными.
+        </p>
+      </div>
     {% endfor %}
   </div>
+
+  <section class="platform-navigation" data-reveal>
+    <div class="section-heading">
+      <span class="eyebrow">разделы платформы</span>
+      <h2>Отдельные страницы вместо вкладок</h2>
+      <p>
+        Эти разделы раньше были вкладками на главной. Теперь у каждого есть свой URL,
+        поэтому проект лучше показывает маршрутизацию Django и выглядит как настоящая учебная система.
+      </p>
+    </div>
+    <div class="resource-grid">
+      <a class="resource-card" href="{% url 'training:method' %}">
+        <span>01</span>
+        <h3>Методика обучения</h3>
+        <p>Как проходить модуль: теория, тесты, лабораторная и краткий вывод аналитика.</p>
+      </a>
+      <a class="resource-card" href="{% url 'training:matrix' %}">
+        <span>02</span>
+        <h3>Мини-карта ATT&amp;CK</h3>
+        <p>Визуальная карта техник и тактик, чтобы видеть общую структуру материала.</p>
+      </a>
+      <a class="resource-card" href="{% url 'training:quiz_catalog' %}">
+        <span>03</span>
+        <h3>Каталог тестов</h3>
+        <p>Все тесты на одной странице: удобно быстро проверять знания по разным темам.</p>
+      </a>
+      <a class="resource-card" href="{% url 'training:lab_catalog' %}">
+        <span>04</span>
+        <h3>Каталог лабораторных</h3>
+        <p>Практические задания с безопасными сценариями и чеклистами выполнения.</p>
+      </a>
+      <a class="resource-card" href="{% url 'training:soc_process' %}">
+        <span>05</span>
+        <h3>SOC-процесс</h3>
+        <p>Как из сигнала сделать гипотезу, проверить её и выбрать действие реагирования.</p>
+      </a>
+    </div>
+  </section>
 {% endblock %}

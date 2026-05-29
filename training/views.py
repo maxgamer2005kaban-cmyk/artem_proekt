@@ -9,9 +9,8 @@ concise and familiar to Django users.
 
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import ListView, DetailView
-from django.urls import reverse
 
-from .models import Technique, Quiz, Lab, Question
+from .models import Technique, Quiz, Lab
 from .forms import QuizForm
 
 
@@ -22,13 +21,28 @@ class TechniqueListView(ListView):
     template_name = 'training/technique_list.html'
     context_object_name = 'techniques'
 
+    def get_queryset(self):
+        return Technique.objects.prefetch_related('quizzes', 'labs')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['quiz_count'] = Quiz.objects.count()
+        context['lab_count'] = Lab.objects.count()
+        return context
+
 
 class TechniqueDetailView(DetailView):
     """Show the details of a technique, including quizzes and labs."""
 
-    model = Technique
+    queryset = Technique.objects.prefetch_related('quizzes__questions', 'labs')
     template_name = 'training/technique_detail.html'
     context_object_name = 'technique'
+    section = 'theory'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['section'] = self.section
+        return context
 
 
 class LabDetailView(DetailView):
@@ -37,6 +51,39 @@ class LabDetailView(DetailView):
     model = Lab
     template_name = 'training/lab_detail.html'
     context_object_name = 'lab'
+
+
+def method_view(request):
+    """Show the learning method page."""
+
+    return render(request, 'training/method.html')
+
+
+def matrix_view(request):
+    """Show a small ATT&CK-style matrix page."""
+
+    techniques = Technique.objects.prefetch_related('quizzes', 'labs')
+    return render(request, 'training/matrix.html', {'techniques': techniques})
+
+
+def quiz_catalog_view(request):
+    """Show all quizzes in one catalog."""
+
+    quizzes = Quiz.objects.select_related('technique').prefetch_related('questions')
+    return render(request, 'training/quiz_catalog.html', {'quizzes': quizzes})
+
+
+def lab_catalog_view(request):
+    """Show all labs in one catalog."""
+
+    labs = Lab.objects.select_related('technique')
+    return render(request, 'training/lab_catalog.html', {'labs': labs})
+
+
+def soc_process_view(request):
+    """Show a simple SOC workflow page."""
+
+    return render(request, 'training/soc_process.html')
 
 
 def quiz_view(request, pk: int):
@@ -71,7 +118,7 @@ def quiz_view(request, pk: int):
             return redirect('training:quiz_results', pk=quiz.id)
     else:
         form = QuizForm(questions=questions)
-    return render(request, 'training/quiz.html', {'quiz': quiz, 'form': form})
+    return render(request, 'training/quiz.html', {'quiz': quiz, 'form': form, 'question_count': questions.count()})
 
 
 def quiz_result_view(request, pk: int):
@@ -92,10 +139,10 @@ def quiz_result_view(request, pk: int):
     user_answers = results['user_answers']
     detailed_results = []
     for question in quiz.questions.all():
-        selected_choice_id = user_answers.get(question.id)
+        selected_choice_id = user_answers.get(str(question.id), user_answers.get(question.id))
         selected_choice = None
         if selected_choice_id is not None:
-            selected_choice = question.choices.get(id=selected_choice_id)
+            selected_choice = question.choices.filter(id=selected_choice_id).first()
         correct_choice = question.choices.filter(is_correct=True).first()
         detailed_results.append({
             'question': question,
@@ -112,6 +159,7 @@ def quiz_result_view(request, pk: int):
             'quiz': quiz,
             'score': score,
             'total': total,
+            'percent': round((score / total) * 100) if total else 0,
             'detailed_results': detailed_results,
         },
     )

@@ -1,42 +1,118 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ technique.title }} | MITRE ATT&CK Training{% endblock %}
+{% block title %}{{ technique.title }} | MITRE ATT&CK Практикум{% endblock %}
 
 {% block content %}
-  <h2 class="mb-3">{{ technique.title }}</h2>
-  {% if technique.attck_id %}<p class="text-muted">ATT&CK ID: {{ technique.attck_id }}</p>{% endif %}
-  <p>{{ technique.description }}</p>
-  <hr />
-  <h3>Quizzes</h3>
-  <div class="row row-cols-1 row-cols-md-2 g-4 mb-4">
-    {% for quiz in technique.quizzes.all %}
-      <div class="col">
-        <div class="card h-100 border-success shadow-sm">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ quiz.title }}</h5>
-            <p class="card-text small flex-grow-1">Test your knowledge on this technique.</p>
-            <a href="{% url 'training:quiz' quiz.pk %}" class="btn btn-success mt-auto">Take Quiz</a>
-          </div>
-        </div>
+  <section class="page-hero compact" data-reveal>
+    <a class="back-link" href="{% url 'training:technique_list' %}">← Все техники</a>
+    {% if technique.attck_id %}<span class="technique-id">{{ technique.attck_id }}</span>{% endif %}
+    <h1>{{ technique.title }}</h1>
+    <p>{{ technique.description }}</p>
+  </section>
+
+  <nav class="section-nav" data-reveal aria-label="Разделы техники">
+    <a class="{% if section == 'theory' %}active{% endif %}" href="{% url 'training:technique_detail' technique.pk %}">Теория</a>
+    <a class="{% if section == 'detection' %}active{% endif %}" href="{% url 'training:technique_detection' technique.pk %}">Признаки</a>
+    <a class="{% if section == 'quizzes' %}active{% endif %}" href="{% url 'training:technique_quizzes' technique.pk %}">Тесты</a>
+    <a class="{% if section == 'labs' %}active{% endif %}" href="{% url 'training:technique_labs' technique.pk %}">Лабы</a>
+  </nav>
+
+  <section class="module-shell section-page" data-reveal>
+    {% if section == 'theory' %}
+      <div class="content-panel">
+        <span class="eyebrow">теория</span>
+        <h2>Что важно запомнить</h2>
+        <p>
+          Эта страница объясняет технику простым языком. В MITRE ATT&amp;CK техника описывает не конкретную
+          программу, а поведение атакующего: что он пытается сделать, какие следы может оставить и почему
+          это действие важно для расследования.
+        </p>
+        <p>
+          При изучении техники полезно задавать три вопроса. Где может появиться сигнал? Какие данные помогут
+          подтвердить гипотезу? Какое безопасное действие можно предпринять дальше? Такой подход помогает
+          не заучивать названия, а понимать логику работы защитника.
+        </p>
+        <p>{{ technique.description }}</p>
       </div>
-    {% empty %}
-      <p>No quizzes available for this technique.</p>
-    {% endfor %}
-  </div>
-  <h3>Labs</h3>
-  <div class="row row-cols-1 row-cols-md-2 g-4">
-    {% for lab in technique.labs.all %}
-      <div class="col">
-        <div class="card h-100 border-info shadow-sm">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ lab.title }}</h5>
-            <p class="card-text small flex-grow-1">{{ lab.description|truncatewords:25 }}</p>
-            <a href="{% url 'training:lab_detail' lab.pk %}" class="btn btn-info mt-auto">View Lab</a>
-          </div>
-        </div>
+      <div class="insight-grid">
+        <article>
+          <h3>Цель атакующего</h3>
+          <p>Получить доступ, выполнить действие, закрепиться или собрать данные для следующего шага атаки.</p>
+        </article>
+        <article>
+          <h3>Что ищет аналитик</h3>
+          <p>Необычные события, странные цепочки действий, отклонения от нормального поведения пользователя или хоста.</p>
+        </article>
+        <article>
+          <h3>Как закрепить тему</h3>
+          <p>Пройти тесты, открыть лабораторную и сформулировать краткий отчёт по найденным признакам.</p>
+        </article>
       </div>
-    {% empty %}
-      <p>No labs available for this technique.</p>
-    {% endfor %}
-  </div>
+    {% elif section == 'detection' %}
+      <span class="eyebrow">признаки и расследование</span>
+      <h2>На что обращать внимание</h2>
+      <p class="lead-text">
+        В учебной платформе признаки описаны безопасно: мы не запускаем вредоносные действия, а тренируемся
+        читать события и строить гипотезы. Это ближе к работе начинающего аналитика SOC.
+      </p>
+      <div class="detection-grid">
+        <article>
+          <span>01</span>
+          <h3>Контекст</h3>
+          <p>Кто выполнил действие, откуда оно пришло, в какое время произошло и похоже ли это на обычную работу.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Артефакты</h3>
+          <p>Домены, команды, процессы, имена файлов, события безопасности, необычные права или цепочки запусков.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>Проверка</h3>
+          <p>Сопоставить несколько источников, убрать ложные срабатывания и аккуратно описать найденные признаки.</p>
+        </article>
+        <article>
+          <span>04</span>
+          <h3>Реакция</h3>
+          <p>Предложить безопасное действие: дополнительный мониторинг, изоляцию, уведомление команды или проверку учётной записи.</p>
+        </article>
+      </div>
+    {% elif section == 'quizzes' %}
+      <span class="eyebrow">проверка знаний</span>
+      <h2>Тесты по технике</h2>
+      <p class="lead-text">
+        Тесты помогают быстро проверить понимание темы. Часть вопросов базовая, часть построена как маленький
+        сценарий расследования: нужно выбрать наиболее безопасное и логичное действие.
+      </p>
+      <div class="learning-grid two-columns">
+        {% for quiz in technique.quizzes.all %}
+          <article class="action-card accent-green" data-reveal>
+            <h3>{{ quiz.title }}</h3>
+            <p>Вопросов: {{ quiz.questions.count }}. После отправки вы увидите процент результата и разбор каждого ответа.</p>
+            <a href="{% url 'training:quiz' quiz.pk %}" class="btn btn-success">Пройти тест</a>
+          </article>
+        {% empty %}
+          <p class="text-muted">Для этой техники пока нет тестов.</p>
+        {% endfor %}
+      </div>
+    {% else %}
+      <span class="eyebrow">практика</span>
+      <h2>Лабораторные работы</h2>
+      <p class="lead-text">
+        Лабораторные работы сделаны как безопасные учебные сценарии. Они не требуют запускать опасные инструменты:
+        нужно читать описание, отмечать чеклист, находить признаки и формулировать выводы.
+      </p>
+      <div class="learning-grid two-columns">
+        {% for lab in technique.labs.all %}
+          <article class="action-card accent-blue" data-reveal>
+            <h3>{{ lab.title }}</h3>
+            <p>{{ lab.description|truncatewords:34 }}</p>
+            <a href="{% url 'training:lab_detail' lab.pk %}" class="btn btn-info">Открыть лабу</a>
+          </article>
+        {% empty %}
+          <p class="text-muted">Для этой техники пока нет лабораторных работ.</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
 {% endblock %}
